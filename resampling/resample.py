@@ -8,7 +8,7 @@ import yaml
 import json
 import soundfile as sf
 import numpy as np
-import stempeg
+# import stempeg
 import librosa
 import argparse
 from multiprocessing.dummy import Pool as ThreadPool

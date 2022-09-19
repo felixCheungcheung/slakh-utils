@@ -70,39 +70,52 @@ def _make_track_subset(input_dir, start=None, end=None):
 
 def _convert_folder(in_track_dir, mix_name, output_base_dir, ffmpeg_func, verbose=False):
     track_dir_basename = os.path.basename(in_track_dir)
-    in_mix_path = os.path.join(in_track_dir, mix_name)
+    in_mix_path = os.path.join(in_track_dir, track_dir_basename+mix_name)
     out_track_dir = os.path.join(output_base_dir, track_dir_basename)
-    out_stems_dir = os.path.join(out_track_dir, 'stems')
-    os.makedirs(out_stems_dir, exist_ok=True)
+    out_INST_stems_dir = os.path.join(out_track_dir, f'{track_dir_basename}_STEMS', 'Inst')
+    out_MUSDB_stems_dir = os.path.join(out_track_dir, f'{track_dir_basename}_STEMS', 'MUSDB')
+    out_raw_tracks_dir = os.path.join(out_track_dir, f'{track_dir_basename}_RAW')
+    os.makedirs(out_INST_stems_dir, exist_ok=True)
+    os.makedirs(out_MUSDB_stems_dir, exist_ok=True)
+    os.makedirs(out_raw_tracks_dir, exist_ok=True)
 
-    shutil.copy(os.path.join(in_track_dir, 'metadata.yaml'),
-                os.path.join(out_track_dir, 'metadata.yaml'))
-    shutil.copy(os.path.join(in_track_dir, 'all_src.mid'),
-                os.path.join(out_track_dir, 'all_src.mid'))
-    shutil.copytree(os.path.join(in_track_dir, 'MIDI'),
-                    os.path.join(out_track_dir, 'MIDI'))
+    shutil.copy(os.path.join(in_track_dir, f'{track_dir_basename}_METADATA.yaml'),
+                os.path.join(out_track_dir, f'{track_dir_basename}_METADATA.yaml'))
+    # shutil.copy(os.path.join(in_track_dir, 'all_src.mid'),
+    #             os.path.join(out_track_dir, 'all_src.mid'))
+    # shutil.copytree(os.path.join(in_track_dir, 'MIDI'),
+    #                 os.path.join(out_track_dir, 'MIDI'))
 
     ffmpeg_func(in_mix_path, out_track_dir)
 
-    in_stems_dir = os.path.join(in_track_dir, 'stems')
-    for src in os.listdir(in_stems_dir):
-        src_path = os.path.join(in_stems_dir, src)
-        ffmpeg_func(src_path, out_stems_dir, verbose=verbose)
-
+    # in_stems_dir = os.path.join(in_track_dir, 'stems')
+    in_INST_stems_dir = os.path.join(in_track_dir, f'{track_dir_basename}_STEMS', 'Inst')
+    in_MUSDB_stems_dir = os.path.join(in_track_dir, f'{track_dir_basename}_STEMS', 'MUSDB')
+    in_raw_tracks_dir = os.path.join(in_track_dir, f'{track_dir_basename}_RAW')
+    for src in os.listdir(in_INST_stems_dir):
+        src_path = os.path.join(in_INST_stems_dir, src)
+        print(src_path)
+        ffmpeg_func(src_path, out_INST_stems_dir, verbose=verbose)
+    for src in os.listdir(in_MUSDB_stems_dir):
+        src_path = os.path.join(in_MUSDB_stems_dir, src)
+        ffmpeg_func(src_path, out_MUSDB_stems_dir, verbose=verbose)
+    for src in os.listdir(in_raw_tracks_dir):
+        src_path = os.path.join(in_raw_tracks_dir, src)
+        ffmpeg_func(src_path, out_raw_tracks_dir, verbose=verbose)
 
 def _apply_ffmpeg(base_dir, output_dir, compress=True, start=None, end=None, n_threads=1,
                   verbose=False):
 
     if compress:
         ffmpeg_func = _wav_to_flac
-        mix_name = 'mix.wav'
+        mix_name = '_MIX.wav'
     else:
         ffmpeg_func = _flac_to_wav
-        mix_name = 'mix.flac'
+        mix_name = '_MIX.flac'
 
     track_directories = _make_track_subset(base_dir, start, end)
     pool = ThreadPool(n_threads)
-
+    print(base_dir)
     # Make a closure because mix_name, output_dir, and ffmpeg_func are unchanging at this point
     def _apply_convert_dir(in_track_dir):
         _convert_folder(in_track_dir, mix_name, output_dir,
