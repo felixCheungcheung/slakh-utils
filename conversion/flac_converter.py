@@ -114,9 +114,14 @@ def _apply_ffmpeg(base_dir, output_dir, compress=True, start=None, end=None, n_t
         ffmpeg_func = _flac_to_wav
         mix_name = '_MIX.flac'
 
-    track_directories = _make_track_subset(base_dir, start, end)
+    # track_directories = _make_track_subset(base_dir, start, end)
+    track_directories = []
+    for split in os.listdir(base_dir):
+        print(base_dir, split)
+        for song in os.listdir(os.path.join(base_dir,split)):
+            track_directories.append(os.path.join(base_dir,split,song))
     pool = ThreadPool(n_threads)
-    print(base_dir)
+    
     # Make a closure because mix_name, output_dir, and ffmpeg_func are unchanging at this point
     def _apply_convert_dir(in_track_dir):
         _convert_folder(in_track_dir, mix_name, output_dir,
