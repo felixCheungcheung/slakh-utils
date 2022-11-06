@@ -79,14 +79,15 @@ def _convert_folder(in_track_dir, mix_name, output_base_dir, ffmpeg_func, verbos
     os.makedirs(out_MUSDB_stems_dir, exist_ok=True)
     os.makedirs(out_raw_tracks_dir, exist_ok=True)
 
-    shutil.copy(os.path.join(in_track_dir, f'{track_dir_basename}_METADATA.yaml'),
-                os.path.join(out_track_dir, f'{track_dir_basename}_METADATA.yaml'))
+    if os.path.exists(os.path.join(in_track_dir, f'{track_dir_basename}_METADATA.yaml')):
+        shutil.copy(os.path.join(in_track_dir, f'{track_dir_basename}_METADATA.yaml'),
+                    os.path.join(out_track_dir, f'{track_dir_basename}_METADATA.yaml'))
     # shutil.copy(os.path.join(in_track_dir, 'all_src.mid'),
     #             os.path.join(out_track_dir, 'all_src.mid'))
     # shutil.copytree(os.path.join(in_track_dir, 'MIDI'),
     #                 os.path.join(out_track_dir, 'MIDI'))
-
-    ffmpeg_func(in_mix_path, out_track_dir)
+    if os.path.exists(in_mix_path):
+        ffmpeg_func(in_mix_path, out_track_dir)
 
     # in_stems_dir = os.path.join(in_track_dir, 'stems')
     in_INST_stems_dir = os.path.join(in_track_dir, f'{track_dir_basename}_STEMS', 'Inst')
