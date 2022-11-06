@@ -93,9 +93,10 @@ def _convert_folder(in_track_dir, mix_name, output_base_dir, ffmpeg_func, verbos
     in_INST_stems_dir = os.path.join(in_track_dir, f'{track_dir_basename}_STEMS', 'Inst')
     in_MUSDB_stems_dir = os.path.join(in_track_dir, f'{track_dir_basename}_STEMS', 'MUSDB')
     in_raw_tracks_dir = os.path.join(in_track_dir, f'{track_dir_basename}_RAW')
+    
     for src in os.listdir(in_INST_stems_dir):
         src_path = os.path.join(in_INST_stems_dir, src)
-        print(src_path)
+        # print(src_path)
         ffmpeg_func(src_path, out_INST_stems_dir, verbose=verbose)
     for src in os.listdir(in_MUSDB_stems_dir):
         src_path = os.path.join(in_MUSDB_stems_dir, src)
