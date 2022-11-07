@@ -28,7 +28,10 @@ def _wav_to_flac(input_path, output_dir, verbose=False):
     """
     basename = os.path.splitext(os.path.basename(input_path))[0]
     output_path = os.path.join(output_dir, basename + '.flac')
-    ffmpeg.input(input_path).output(output_path).run_async(overwrite_output=not verbose)
+    if os.path.exists(output_path):
+        pass
+    else:
+        ffmpeg.input(input_path).output(output_path).run_async(overwrite_output=not verbose)
 
 
 def _flac_to_wav(input_path, output_dir, verbose=False):
