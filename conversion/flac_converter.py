@@ -32,6 +32,7 @@ def _wav_to_flac(input_path, output_dir, verbose=False):
         pass
     else:
         ffmpeg.input(input_path).output(output_path).run_async(overwrite_output=not verbose)
+        print(f"Successfully convert {output_path}")
 
 
 def _flac_to_wav(input_path, output_dir, verbose=False):
